@@ -1,5 +1,6 @@
 import r2pipe
 import base64
+import os
 
 from angrdbg import *
 
@@ -7,30 +8,40 @@ from angrdbg import *
 class R2Debugger(Debugger):
     def __init__(self, r2):
         self.r2 = r2
+        self.base_addr = None
 
     def _get_vmmap(self):
-        return None
+        dm = self.r2.cmdj("dmj")
+        maps = []
+        for s in dm:
+            start = s["addr"]
+            end = s["addr_end"]
+            mapperm = 0
+            if "r" in s["perm"]:
+                mapperm |= SEG_PROT_R
+            if "w" in s["perm"]:
+                mapperm |= SEG_PROT_W
+            if "x" in s["perm"]:
+                mapperm |= SEG_PROT_X
+            maps += [(start, end, mapperm, s["name"])]
+        return maps
 
-    def _get_sections(self):
-        return None
-    
     # -------------------------------------
     def before_stateshot(self):
         self.vmmap = self._get_vmmap()
-        sections = self._get_sections()
 
-        for start, end, name in sections:
-            if name == load_project().arch.got_section_name:
-                self.got = (start, end)
-            elif name == ".plt":
-                self.plt = (start, end)
+        for sec in self.r2.cmdj("iSj"):
+            if sec["name"] == load_project().arch.got_section_name:
+                self.got = (sec["vaddr"], sec["vaddr"] + sec["vsize"])
+            elif sec["name"] == ".plt":
+                self.plt = (sec["vaddr"], sec["vaddr"] + sec["vsize"])
 
     def after_stateshot(self, state):
         pass
     # -------------------------------------
 
     def is_active(self):
-        return gdb.selected_thread() is not None
+        return self.r2.cmd("dm") != ""
 
     # -------------------------------------
     def input_file(self):
@@ -95,7 +106,7 @@ class R2Debugger(Debugger):
     def get_reg(self, name):
         if name == "efl":
             name = "eflags"
-         return int(self.r2.cmd("dr?" + name), 16)
+        return int(self.r2.cmd("dr?" + name), 16)
 
     def set_reg(self, name, value):
         if name == "efl":
@@ -117,9 +128,15 @@ class R2Debugger(Debugger):
 
     # -------------------------------------
     def seg_by_name(self, name):
+        for start, end, perms, mname in self.vmmap:
+            if name == mname:
+                return Segment(name, start, end, perms)
         return None
 
     def seg_by_addr(self, addr):
+        for start, end, perms, name in self.vmmap:
+            if addr >= start and addr < end:
+                return Segment(name, start, end, perms)
         return None
 
     def get_got(self):  # return tuple(start_addr, end_addr)
@@ -130,6 +147,20 @@ class R2Debugger(Debugger):
 
     # -------------------------------------
     def resolve_name(self, name):  # return None on fail
+        try:
+            modules = self.r2.cmdj("dmmj")
+            for m in modules[1:]:
+                addr = m["address"]
+                lib = os.path.basename(m["name"]).split(".")[0].split("-")[0]
+                o = self.r2.cmd("dmi* %s %s" % (lib, name))
+                for line in o.split("\n"):
+                    line = line.split()
+                    if len(line) < 4:
+                        continue
+                    if line[1] == name or line[3] == "sym."+name:
+                        return int(line[3], 16)
+        except:
+            pass
         return None
 
 
