@@ -115,7 +115,10 @@ class R2Debugger(Debugger):
 
     # -------------------------------------
     def step_into(self):
-        self.r2.cmd("ds")
+        print 555
+        print self.r2.cmd(raw_input())
+        #self.r2.cmd("ds")
+        print 666
 
     def run(self):
         self.r2.cmd("dc")
@@ -164,7 +167,6 @@ class R2Debugger(Debugger):
         return None
 
 
-r2 = r2pipe.open('#!pipe')
-
-register_debugger(R2Debugger(r2))
+def init(r2):
+    register_debugger(R2Debugger(r2))
 
