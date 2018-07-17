@@ -1,3 +1,2 @@
 angrdbg
-ipython<6.0.0
 r2pipe
