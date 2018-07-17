@@ -56,34 +56,34 @@ class R2Debugger(Debugger):
     # -------------------------------------
     def get_byte(self, addr):
         try:
-            return ord(self.r2.cmd("pr 1 @ %d" % addr))
+            return ord(base64.b64decode(self.r2.cmd("p6e 1 @ %d" % addr)))
         except BaseException:
             return None
 
     def get_word(self, addr):
         try:
             return struct.unpack(
-                "<H", self.r2.cmd("pr 2 @ %d" % addr))[0]
+                "<H", base64.b64decode(self.r2.cmd("p6e 2 @ %d" % addr)))[0]
         except BaseException:
             return None
 
     def get_dword(self, addr):
         try:
             return struct.unpack(
-                "<I", self.r2.cmd("pr 4 @ %d" % addr))[0]
+                "<I", base64.b64decode(self.r2.cmd("p6e 4 @ %d" % addr)))[0]
         except BaseException:
             return None
 
     def get_qword(self, addr):
         try:
             return struct.unpack(
-                "<Q", self.r2.cmd("pr 8 @ %d" % addr))[0]
+                "<Q", base64.b64decode(self.r2.cmd("p6e 8 @ %d" % addr)))[0]
         except BaseException:
             return None
 
     def get_bytes(self, addr, size):
         try:
-            return self.r2.cmd("pr %d @ %d" % (size, addr))
+            return base64.b64decode(self.r2.cmd("p6e %d @ %d" % (size, addr)))
         except BaseException:
             return None
 
@@ -115,10 +115,7 @@ class R2Debugger(Debugger):
 
     # -------------------------------------
     def step_into(self):
-        print 555
-        print self.r2.cmd(raw_input())
-        #self.r2.cmd("ds")
-        print 666
+        self.r2.cmd("ds")
 
     def run(self):
         self.r2.cmd("dc")
