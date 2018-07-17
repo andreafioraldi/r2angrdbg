@@ -10,15 +10,15 @@ from setuptools import setup
 VER = "1.0.0"
 
 setup(
-    name='r2angr',
+    name='r2angrdbg',
     version=VER,
     license=__license__,
     description='Use angr inside the radare2 debugger. Create an angr state from the current debugger state. ',
     author=__author__,
     author_email=__email__,
-    url='https://github.com/andreafioraldi/r2angr',
-    download_url = 'https://github.com/andreafioraldi/r2angr/archive/' + VER + '.tar.gz',
-    package_dir={'r2angr': 'r2angr'},
-    packages=['r2angr'],
+    url='https://github.com/andreafioraldi/r2angrdbg',
+    download_url = 'https://github.com/andreafioraldi/r2angrdbg/archive/' + VER + '.tar.gz',
+    package_dir={'r2angrdbg': 'r2angrdbg'},
+    packages=['r2angrdbg'],
     install_requires=['angrdbg'],
 )

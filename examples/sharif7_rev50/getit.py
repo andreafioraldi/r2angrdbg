@@ -1,10 +1,9 @@
-import r2pipe
-import r2angr
+from r2angrdbg import *
 
 r2 = r2pipe.open("getit")
-r2angr.init(r2)
+init(r2)
 
-r2angr.set_memory_type(r2angr.USE_CLE_MEMORY)
+set_memory_type(USE_CLE_MEMORY)
 
 r2.cmd("aaa")
 r2.cmd("ood")
@@ -14,7 +13,7 @@ r2.cmd("dc")
 flag_addr = 0x6010e0
 stop_addr = 0x4008c8
 
-sm = r2angr.StateManager()
+sm = StateManager()
 
 m = sm.simulation_manager()
 m.explore(find=stop_addr)

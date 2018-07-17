@@ -1,15 +1,15 @@
 import r2pipe
-import r2angr
+import r2angrdbg
 
 r2 = r2pipe.open("ais3_crackme")
-r2angr.init(r2)
+r2angrdbg.init(r2)
 
 r2.cmd("aaa")
 r2.cmd("ood DUMMY")
 r2.cmd("db 0x004005f9")
 r2.cmd("dc")
 
-sm = r2angr.StateManager()
+sm = r2angrdbg.StateManager()
 sm.sim(sm["rax"], 100)
 
 m = sm.simulation_manager()
