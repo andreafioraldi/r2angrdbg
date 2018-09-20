@@ -10,7 +10,15 @@ r2.cmd("db 0x004005f9")
 r2.cmd("dc")
 
 sm = r2angrdbg.StateManager()
-sm.sim(sm["rax"], 100)
+key = sm.sim(sm["rax"], 100)
+argv1, size = sm.get_symbolic(key)
+initial_state = sm.get_state()
+
+initial_state.add_constraints(argv1.chop(8)[0] == 'a')
+initial_state.add_constraints(argv1.chop(8)[1] == 'i')
+initial_state.add_constraints(argv1.chop(8)[2] == 's')
+initial_state.add_constraints(argv1.chop(8)[3] == '3')
+initial_state.add_constraints(argv1.chop(8)[4] == '{')
 
 m = sm.simulation_manager()
 m.explore(find=0x00400602, avoid=0x0040060e)
