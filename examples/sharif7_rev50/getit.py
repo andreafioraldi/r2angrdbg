@@ -1,5 +1,11 @@
 from r2angrdbg import *
 
+try:
+    long
+    bytes = str
+except:
+    long = int
+
 r2 = r2pipe.open("getit")
 init(r2)
 
@@ -20,4 +26,4 @@ m.explore(find=stop_addr)
 
 flag = m.found[0].memory.load(flag_addr, 50)
 
-print m.found[0].solver.eval(flag, cast_to=str)
+print(m.found[0].solver.eval(flag, cast_to=bytes))

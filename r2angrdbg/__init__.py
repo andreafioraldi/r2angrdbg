@@ -100,7 +100,7 @@ class R2Debugger(Debugger):
         self.put_bytes(addr, struct.pack("<Q", value))
 
     def put_bytes(self, addr, value):
-        self.r2.cmd("w6d %s @ %d" % (base64.b64encode(value), addr))
+        self.r2.cmd("w6d %s @ %d" % (base64.b64encode(value).decode("utf-8"), addr))
 
     # -------------------------------------
     def get_reg(self, name):
