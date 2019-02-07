@@ -50,7 +50,7 @@ class R2Debugger(Debugger):
 
     def image_base(self):
         if self.base_addr is None:
-            self.base_addr = int(self.r2.cmd("e bin.baddr"))
+            self.base_addr = self.r2.cmdj('ej')['bin.baddr']
         return self.base_addr
 
     # -------------------------------------
