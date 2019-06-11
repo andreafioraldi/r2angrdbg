@@ -45,12 +45,13 @@ class R2Debugger(Debugger):
 
     # -------------------------------------
     def input_file(self):
-        path = self.r2.cmdj("dmj")[0]["file"]
+        # path = self.r2.cmdj("dmj")[0]["file"]
+        path = self.r2.cmdj("ij")['core']['file']
         return open(path, "rb")
 
     def image_base(self):
         if self.base_addr is None:
-            self.base_addr = self.r2.cmdj('ej')['bin.baddr']
+            self.base_addr = int(self.r2.cmd("e bin.baddr"), 16)
         return self.base_addr
 
     # -------------------------------------
